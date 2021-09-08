@@ -3,6 +3,7 @@
 #include <tchar.h>
 #include <strsafe.h>
 
+#include "SvcWorker.h"
 #include "resource.h"
 
 #pragma comment(lib, "advapi32.lib")
@@ -117,7 +118,8 @@ VOID WINAPI SvcMain(DWORD dwArgc, LPTSTR* lpszArgv)
 
 VOID SvcInit(DWORD dwArgc, LPTSTR* lpszArgv)
 {
-	//TODO DECLARE AND SET ANY VARIABLE
+	//TODO DECLARE AND SET ANY VARIABLE call periodically reportStatus with startPending, or service_stopped if initialisation failed
+	InitializeServiceWorker();
 
 	g_svcStopEvent = CreateEvent(
 		NULL,
@@ -135,10 +137,17 @@ VOID SvcInit(DWORD dwArgc, LPTSTR* lpszArgv)
 	ReportSvcStatus(SERVICE_RUNNING, NO_ERROR, 0);
 
 	//TO_DO : do the stuff here
+	
+	//start thread for file
+	HANDLE hthread = CreateThread(NULL, 0, RunServiceWoker, NULL, 0, NULL);
+	
 	while (1)
 	{
 		WaitForSingleObject(g_svcStopEvent, INFINITE);
 
+		// clean up code (call reportStatus with stop_pending ?)
+		g_isStopAsking = true;
+		deleteServiceWOrker();
 		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
 		return;
 	}
