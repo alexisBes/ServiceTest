@@ -146,8 +146,8 @@ VOID SvcInit(DWORD dwArgc, LPTSTR* lpszArgv)
 		WaitForSingleObject(g_svcStopEvent, INFINITE);
 
 		// clean up code (call reportStatus with stop_pending ?)
-		g_isStopAsking = true;
-		deleteServiceWOrker();
+		DeleteServiceWOrker();
+
 		ReportSvcStatus(SERVICE_STOPPED, NO_ERROR, 0);
 		return;
 	}
